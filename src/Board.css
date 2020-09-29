@@ -1,0 +1,41 @@
+.black-tile {
+    background: #000000;
+    border: 2px solid #999;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 34px;
+    margin-right: -1px;
+    margin-left: -1px;
+    padding: 0;
+    text-align: center;
+    width: 34px;
+}
+
+.white-tile {
+    background: #FFFFFF;
+    border: 2px solid #999;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 34px;
+    margin-right: -1px;
+    margin-left: -1px;
+    padding: 0;
+    text-align: center;
+    width: 34px;
+}
+
+.centerDiv{
+    #position: absolute;
+    position: center;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+}
+
+.clear {
+    clear: both;
+    content: "";
+}

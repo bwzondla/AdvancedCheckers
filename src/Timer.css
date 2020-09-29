@@ -1,0 +1,13 @@
+.timer {
+    background: #FFFFFF;
+    border: 2px solid #14cde5;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 34px;
+    margin-right: -1px;
+    margin-left: -1px;
+    padding: 0;
+    text-align: center;
+    width: 60px;
+}
