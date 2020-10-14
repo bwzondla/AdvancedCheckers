@@ -11,9 +11,11 @@ class Tile extends React.Component{
     {
         return (
             <div
-                className={this.props.tileColor == "#000000" ? 'black-tile' : 'white-tile'}
+                className={this.props.tileColor == "#484848" ? 'black-tile' : 'white-tile'}
                 onClick={this.props.onClick}
                 background-color={this.props.tileColor}>
+                x = {this.props.x}
+                y = {this.props.y}
                 {this.props.x}
             </div>
 
@@ -37,11 +39,11 @@ class Board extends React.Component {
         for (let i = 0; i < 8; i++){
             matrix.push([]);
             for (let j = 0; j < 8; j++){
-                let color = "#FFFFFF";
+                let color = "#2f51c4";
                 if ((i & 1) === 0 && (j & 1) === 1){
-                    color = "#000000";
+                    color = "#484848";
                 } else if ((i & 1) === 1 && (j & 1) === 0){
-                    color = "#000000";
+                    color = "#484848";
                 }
 
                 matrix[i][j] = {

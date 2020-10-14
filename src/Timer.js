@@ -1,63 +1,55 @@
 import React from 'react';
 import './Board.css';
 import App from "./App";
+import ReactDOM from "react-dom";
 
-let time = 3
-let timer = null
-
+let timerObject = null;
 class Timer extends React.Component{
 
     constructor(props) {
         super(props);
-        this.state = {time: 0}
-    }
-
-    componentDidMount() {
-        this.startTimer()
-    }
-
-    componentWillUnmount() {
-        this.stopTimer()
+        this.state = {time: 180};
     }
 
     startTimer(){
-        time = 3
-        timer = setInterval(this.countdown, 1000 );
+        if(!timerObject) {
+            if (this.state.time <= 0){
+                this.setState({time: 180})
+            }
+            timerObject = setInterval(this.startTimer.bind(this), 1000);
+        } else {
+
+            let clock = this.state.time;
+            clock = clock - 1;
+            this.setState({time:clock});
+            if (this.state.time <= 0 ){
+                this.stopTimer();
+            }
+        }
     }
 
-
-
     stopTimer(){
-        if (timer){
-            clearInterval(timer);
-            timer = null;
-        }
+        clearInterval(timerObject);
+        timerObject = null;
     }
 
     reset(){
-        time = 3;
-
+        this.setState({time: 180});
     }
 
-    countdown(){
-        let clock = time;
-        clock = clock - 1;
-        time = clock;
-        //this.setState({time:clock});
-        if (time <=0 ){
-            this.stopTimer();
-        }
-    }
     render()
     {
         return (
-            <div>
-                <h2 > {time}</h2>
-                <button onClick={this.stopTimer.bind(this)}> Stop </button>
-                <button onClick={this.startTimer.bind(this)}> Start </button>
-                <button onClick={this.reset.bind(this)}> Reset</button>
+            <div className={"timer"}>
+                <div className="vertical-center"  > {this.state.time}</div>
+                <button className={"small-button"} onClick={this.stopTimer.bind(this)}> Stop </button>
+                <button className="small-button"  onClick={this.startTimer.bind(this)}> Start </button>
+                <button className="small-button"  onClick={this.reset.bind(this)}> Reset</button>
             </div>
         );
     }
 }
+
+ReactDOM.render(<Timer />, document.getElementById("root"));
+
 export default Timer;

@@ -25,7 +25,9 @@ function App() {
   );
 
    */
-  return (Timer)
+  return (
+      <Timer></Timer>
+  )
 }
 
 export default App;

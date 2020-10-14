@@ -1,5 +1,5 @@
 .black-tile {
-    background: #000000;
+    background: #484848;
     border: 2px solid #999;
     float: left;
     font-size: 24px;
@@ -13,7 +13,7 @@
 }
 
 .white-tile {
-    background: #FFFFFF;
+    background: #2f51c4;
     border: 2px solid #999;
     float: left;
     font-size: 24px;
