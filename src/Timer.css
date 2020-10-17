@@ -2,26 +2,28 @@
 .small-button {
     background-color: #f5f5f5; /* Green */
     border: #282c34;
-    color: white;
     padding: 15px 32px;
+    width: 70px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
+    justify-self: center;
+
 }
 
 .timer {
     height: 400px;
-    width: 400px;
+    width: 210px;
     align-content: center;
-    border: #e30b0b;
+    border: #070707;
+    display: block;
+    outline: #282c34;
+
 }
 
 .vertical-center {
     justify-self: center;
     text-align: center;
-    margin-left: 40px;
-    margin-right: 40px;
-
     border: #282c34;
 }
