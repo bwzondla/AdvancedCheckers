@@ -27,7 +27,17 @@ function App() {
 
    */
   return (
-      <PauseMenu></PauseMenu>
+      <div>
+        <div>
+          <Board></Board>
+        </div>
+        <div>
+          <PauseMenu></PauseMenu>
+        </div>
+        <div>
+          <Timer></Timer>
+        </div>
+      </div>
   )
 }
 
