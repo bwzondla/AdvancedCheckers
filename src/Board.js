@@ -1,5 +1,6 @@
 import React from 'react';
 import './Board.css';
+import ReactDOM from "react-dom";
 
 class Tile extends React.Component{
 
@@ -13,9 +14,10 @@ class Tile extends React.Component{
             <div
                 className={this.props.tileColor == "#484848" ? 'black-tile' : 'white-tile'}
                 onClick={this.props.onClick}
-                background-color={this.props.tileColor}>
+                background-color={this.props.tileColor}
                 x = {this.props.x}
-                y = {this.props.y}
+                y = {this.props.y}>
+
                 {this.props.x}
             </div>
 
@@ -75,5 +77,6 @@ class Board extends React.Component {
         });
     }
 }
+ReactDOM.render(<Board />, document.getElementById("root"));
 
 export default Board;

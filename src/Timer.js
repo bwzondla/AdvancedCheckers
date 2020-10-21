@@ -1,5 +1,5 @@
 import React from 'react';
-import './Board.css';
+import './Timer.css';
 import App from "./App";
 import ReactDOM from "react-dom";
 
@@ -40,9 +40,9 @@ class Timer extends React.Component{
     render()
     {
         return (
-            <div className={"timer"}>
+            <div className="timer">
                 <div className="vertical-center"  > {this.state.time}</div>
-                <button className={"small-button"} onClick={this.stopTimer.bind(this)}> Stop </button>
+                <button className="small-button" onClick={this.stopTimer.bind(this)}> Stop </button>
                 <button className="small-button"  onClick={this.startTimer.bind(this)}> Start </button>
                 <button className="small-button"  onClick={this.reset.bind(this)}> Reset</button>
             </div>

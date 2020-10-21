@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import Board from './Board';
 import Timer from './Timer';
+import PauseMenu from './PauseMenu'
 function App() {
   /*
     return (
@@ -26,7 +27,17 @@ function App() {
 
    */
   return (
-      <Timer></Timer>
+      <div>
+        <div>
+          <Board></Board>
+        </div>
+        <div>
+          <PauseMenu></PauseMenu>
+        </div>
+        <div>
+          <Timer></Timer>
+        </div>
+      </div>
   )
 }
 
