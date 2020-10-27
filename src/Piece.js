@@ -34,56 +34,49 @@ class ChessPiece extends React.Component
     
     render()
     {
+        if(this.props.part === -1){
+            return(
+                <div className={"img"}></div>
+            )
+        }
         if(this.props.side === 0)
         {
             if (this.props.part === 0)
             {
                 
                 return (
-                <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={whitepawn} />
-                </button>
+                    <img className={"img"} src={whitepawn} />
                 );
             }
             else if(this.props.part === 1)
             {
                 return (
-                <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={whiterook} />
-                </button>
+                    <img className={"img"} src={whiterook} />
                 );
             }
             else if(this.props.part === 2)
             {
                 //whiteknight lol
                 return (
-                <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={whiteknight} />
-                </button>
+                    <img className={"img"} src={whiteknight} />
                 );
             }
             else if(this.props.part === 3)
             {
                 return (
-                <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={whitebishop} />
-                </button>
+                    <img className={"img"} src={whitebishop} />
                 );
             }
             else if(this.props.part === 4)
             {
                 return (
-                <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={whitequeen} />
-                </button>
+                    <img className={"img"} src={whitequeen} />
                 );
             }
             else if(this.props.part === 5)
             {
                 return (
-                    <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={whiteking} />
-                    </button>
+                    <img className={"img"} src={whiteking} />
                 );
             }
         }
@@ -92,50 +85,37 @@ class ChessPiece extends React.Component
             if (this.props.part === 0)
             {
                 return (
-                <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={blackpawn} />
-                </button>
+                    <img className={"img"} src={blackpawn} />
                 );
             }
             else if(this.props.part === 1)
             {
                 return (
-                <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={blackrook} />
-                </button>
+                    <img className={"img"} src={blackrook} />
                 );
             }
             else if(this.props.part === 2)
             {
-                //whiteknight lol
                 return (
-                <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={blackknight} />
-                </button>
+                    <img className={"img"} src={blackknight} />
                 );
             }
             else if(this.props.part === 3)
             {
                 return (
-                <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={blackbishop} />
-                </button>
+                    <img className={"img"} src={blackbishop} />
                 );
             }
             else if(this.props.part === 4)
             {
                 return (
-                <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={blackqueen} />
-                </button>
+                    <img className={"img"} src={blackqueen} />
                 );
             }
             else if(this.props.part === 5)
             {
                 return (
-                <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
-                    <img src={blackking} />
-                </button>
+                    <img className={"img"} src={blackking} />
                 );
             }
         }
@@ -225,4 +205,8 @@ ReactDOM.render(
     document.getElementById('root')
 );
 
-export default Piece;
+ReactDOM.render(
+    <ChessPiece />,
+    document.getElementById('root')
+);
+export default ChessPiece;

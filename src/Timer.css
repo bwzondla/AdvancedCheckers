@@ -1,13 +1,12 @@
 
 .small-button {
-    background-color: #f5f5f5; /* Green */
-    border: #282c34;
-    padding: 15px 32px;
-    width: 70px;
+    background-color: #b2ea8d; /* Green */
+    border-color: #282c34;
+    padding: 10px 10px;
+    width: 33%;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
+    font-size: 15px;
     justify-self: center;
 
 }
@@ -16,14 +15,15 @@
     height: 400px;
     width: 210px;
     align-content: center;
-    border: #070707;
     display: block;
-    outline: #282c34;
-
+    outline-color: #282c34;
 }
 
 .vertical-center {
+    border-color: #282c34;
     justify-self: center;
     text-align: center;
-    border: #282c34;
+    width: 99%;
+    background-color: #b2ea8d; /* Green */
+
 }

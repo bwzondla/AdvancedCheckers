@@ -36,3 +36,34 @@
     transform: rotate(360deg);
   }
 }
+
+.header {
+  background-color: #F1F1F1;
+  text-align: center;
+  padding: 20px;
+}
+
+.column {
+  float: left;
+}
+
+.column.side{
+  width: 20%;
+}
+
+.column.middle{
+  width: 60%;
+}
+
+.background{
+  background-image: url("assets/Chess Backround.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+  text-align: center;
+}
