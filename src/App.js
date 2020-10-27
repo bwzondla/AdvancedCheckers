@@ -3,7 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 import Board from './Board';
 import Timer from './Timer';
-import PauseMenu from './PauseMenu'
+import PauseMenu from './PauseMenu';
+import Piece from './Piece';
 function App() {
   /*
     return (
@@ -27,16 +28,23 @@ function App() {
 
    */
   return (
-      <div>
-        <div>
-          <Board></Board>
-        </div>
-        <div>
-          <PauseMenu></PauseMenu>
-        </div>
-        <div>
-          <Timer></Timer>
-        </div>
+      <div className={"background"}>
+          <div className={"header"}>
+              <PauseMenu></PauseMenu>
+          </div>
+
+          <div className={"row"}>
+
+              <div className={"column side"}>
+                  <Timer></Timer>
+              </div>
+              <div className={"column middle"}>
+                  <Board></Board>
+              </div>
+              <div className={"column side"}>
+                  GraveYard
+              </div>
+          </div>
       </div>
   )
 }
