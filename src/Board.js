@@ -2,11 +2,32 @@ import React from 'react';
 import './Board.css';
 import ReactDOM from "react-dom";
 import Piece from "./Piece";
+
+
 class Tile extends React.Component{
 
     constructor(props) {
         super(props);
+        this.state = {past: this.props.piece, current: this.props.piece};
+        this.changeState = this.changeState.bind(this)
     }
+
+
+
+    selectSquare()
+    {
+        var parentState = this.props.getParentState();
+        if (parentState.tileSelected === 1){
+            this.setState({past: this.state.current, current: parentState.tile1.state.current})
+        }
+        this.props.updateParentState(this)
+    }
+
+    changeState(tile){
+        this.setState({past: this.state.current, current: tile.current})
+    }
+
+
 
     render()
     {
@@ -14,13 +35,15 @@ class Tile extends React.Component{
         return (
             <div
                 className={this.props.tileColor == "#484848" ? 'tile black' : 'tile white'}
-                onClick={this.props.onClick}
+                onClick={this.selectSquare.bind(this)}
                 background-color={this.props.tileColor}
                 x = {this.props.x}
                 y = {this.props.y}
                 piece = {this.props.piece}
                 >
-                {this.props.piece}
+                <div className={"tooltip"}> {this.state.current}
+                    <span className={"tooltiptext"}>{this.props.x},{this.props.y}</span>
+                </div>
             </div>
 
         );
@@ -29,13 +52,30 @@ class Tile extends React.Component{
 
 class Board extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {tileSelected: 0, tile1: null, tile2:null};
+    }
 
     render(){
         return (
-            <div className={"board"}>
+            <div id="board" className={"board"}>{this.state.tileSelected}
                 {this.renderBoard(this.createEmptyBoard())}
             </div>
         )
+    }
+
+    getState(){
+        return this.state;
+    }
+
+    updateState(tile, newRef){
+        if(this.state.tileSelected === 0){
+            this.setState({tileSelected: 1, tile1: tile})
+        }else {
+            this.state.tile1.changeState(tile)
+            this.setState({tileSelected: 0, tile1: "", tile2: ""})
+        }
     }
 
     createEmptyBoard(){
@@ -68,6 +108,9 @@ class Board extends React.Component {
                         key = {item.x * row.length + item.y}>
                         <Tile
                             //onClick = { () => this.handleTileClick(item.x,item.y)}
+                            getParentState = {this.getState.bind(this)}
+                            updateParentState = {this.updateState.bind(this)}
+                            name = {item.x + item.y}
                             value = {item}
                             x = {item.x}
                             y = {item.y}
