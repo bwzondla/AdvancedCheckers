@@ -50,7 +50,7 @@ class Tile extends React.Component{
                 piece = {this.props.piece}
                 >
                 <div className={"tooltip"}> {this.state.current}
-                    <span className={"tooltiptext"}>{this.props.part},{this.props.side}</span>
+                    <span className={"tooltiptext"}>{this.props.x},{this.props.y}</span>
                 </div>
             </div>
 
@@ -154,19 +154,412 @@ class Board extends React.Component {
         let y2 = parseInt(to[1], 10)
 
         let tempMatrix = this.state.gameState
-        console.log(x1.toString() +  y1.toString())
-        console.log(x2.toString() +  y2.toString())
 
-        console.log(tempMatrix[x1][y1].part.toString() + " " + tempMatrix[x1][y1].side)
         tempMatrix[x2][y2] = {x:x2,y:y2,tileColor: tempMatrix[x2][y2].tileColor, part: tempMatrix[x1][y1].part, side: tempMatrix[x1][y1].side}
         tempMatrix[x1][y1] = {x:x1,y:y1, tileColor: tempMatrix[x1][y1].tileColor, part: -1, side: -1}
+        console.log(tempMatrix)
         this.setState({gameState: tempMatrix, moveCount: this.moveCount + 1})
-        console.log(this.state.gameState === this.createEmptyBoard())
 
     }
 
     isValidMove(p1, xy1, p2, xy2){
-        return true;
+        let x = parseInt(xy1[0], 10)
+        let y = parseInt(xy1[1], 10)
+        let side = p1.props.side
+        console.log(p1.props.part)
+        let board = this.state.gameState
+
+        let validMoves = []
+        //is pawn
+        if (p1.props.part === 0){
+            //is white pawn
+            if (p1.props.side === 0) {
+                if (board[x - 1][y].part === -1) {
+                    validMoves.push((x-1).toString() + y.toString())
+                    if ( x === 6){
+                        if (board[x - 2][y].part === -1){
+                            validMoves.push((x-2).toString() + y.toString())
+                        }
+                    }
+                }
+
+                if (y - 1 >= 0) {
+                    if (board[x - 1][y - 1].side != -1 & board[x - 1][y - 1].side != side) {
+                        validMoves.push((x - 1).toString() + (y - 1).toString())
+                    }
+                }
+                if (y + 1 <= 7) {
+                    if (board[x - 1][y + 1].side != -1 & board[x - 1][y + 1].side != side) {
+                        validMoves.push((x - 1).toString() + (y - 1).toString())
+                    }
+
+                }
+            }
+
+            //is black pawn
+            if( p1.props.side === 1){
+                if (board[x + 1][y].part === -1) {
+                    validMoves.push((x+1).toString() + y.toString())
+                    if ( x === 1){
+                        if (board[x + 2][y].part === -1){
+                            validMoves.push((x+2).toString() + y.toString())
+                        }
+                    }
+                }
+
+                if (y - 1 >= 0) {
+                    if (board[x + 1][y - 1].side != -1 & board[x + 1][y - 1].side != side) {
+                        validMoves.push((x + 1).toString() + (y - 1).toString())
+                    }
+                }
+                if (y + 1 <= 7) {
+                    if (board[x + 1][y + 1].side != -1 & board[x + 1][y + 1].side != side) {
+                        validMoves.push((x + 1).toString() + (y - 1).toString())
+                    }
+                }
+            }
+
+        }
+        //end pawn
+
+        //begin rook
+        if(p1.props.part === 1){
+            //same for both sides
+            for(let i = x + 1; i <= 7; i++){
+                if(board[i][y].part != -1 ){
+                    if (board[i][y].side != side ){
+                        validMoves.push((i).toString() + y.toString())
+                    }
+                    break
+                } else {
+                    validMoves.push((i).toString() + y.toString())
+                }
+            }
+
+            for(let i = x - 1; i >= 0; i--){
+                if(board[i][y].part != -1 ){
+                    if (board[i][y].side != side ){
+                        validMoves.push((i).toString() + y.toString())
+                    }
+                    break
+                } else {
+                    validMoves.push((i).toString() + y.toString())
+                }
+            }
+
+            for(let i = y - 1; i >= 0; i--){
+                if(board[x][i].part != -1 ){
+                    if (board[x][i].side != side ){
+                        validMoves.push((x).toString() + i.toString())
+                    }
+                    break
+                } else {
+                    validMoves.push((x).toString() + i.toString())
+                }
+            }
+
+            for(let i = y + 1; i <= 7; i++){
+                if(board[x][i].part != -1 ){
+                    if (board[x][i].side != side ){
+                        validMoves.push((x).toString() + i.toString())
+                    }
+                    break
+                } else {
+                    validMoves.push((x).toString() + i.toString())
+                }
+            }
+
+        }
+
+        //knight
+        if( p1.props.part === 2){
+
+            if( y - 2 >= 0){
+                if (x - 1 >= 0){
+                    if(board[x - 1][y - 2].side != side){
+                        validMoves.push((x - 1).toString() + (y-2).toString())
+                    }
+                }
+                if (x + 1 <= 7){
+                    if(board[x+1][y-2].side != side){
+                        validMoves.push((x + 1).toString() + (y-2).toString())
+
+                    }
+                }
+            }
+
+            if (y + 2 <= 7){
+                if (x - 1 >= 0){
+                    if(board[x - 1][y + 2].side != side){
+                        validMoves.push((x - 1).toString() + (y+2).toString())
+                    }
+                }
+                if (x + 1 <= 7){
+                    if(board[x+1][y+2].side != side){
+                        validMoves.push((x + 1).toString() + (y+2).toString())
+
+                    }
+                }
+            }
+
+            if (x + 2 <= 7){
+                if (y - 1 >= 0){
+                    if(board[x + 2][y - 1].side != side){
+                        validMoves.push((x + 2).toString() + (y - 1).toString())
+                    }
+                }
+                if (y + 1 <= 7){
+                    if(board[x + 1][y + 1].side != side){
+                        validMoves.push((x + 2).toString() + (y + 1 ).toString())
+
+                    }
+                }
+            }
+
+            if (x - 2 >= 0){
+                if (y - 1 >= 0){
+                    if(board[x - 2][y - 1].side != side){
+                        validMoves.push((x - 2).toString() + (y - 1).toString())
+                    }
+                }
+                if (y + 1 <= 7){
+                    if(board[x - 2][y + 1].side != side){
+                        validMoves.push((x - 2).toString() + (y + 1 ).toString())
+
+                    }
+                }
+            }
+            //end knight
+        }
+
+        //bishop
+        if( p1.props.part === 3){
+            let i = x - 1
+            let j = y - 1
+            while( i >= 0 & j>=0){
+                if(board[i][j].part != -1 ){
+                    if (board[i][j].side != side ){
+                        validMoves.push((i).toString() + j.toString())
+                    }
+                    break
+                } else{
+                    validMoves.push((i).toString() + j.toString())
+                }
+                i = i - 1
+                j = j - 1
+            }
+
+            i = x + 1
+            j = y - 1
+            while( i <=7  & j>=0){
+                if(board[i][j].part != -1 ){
+                    if (board[i][j].side != side ){
+                        validMoves.push((i).toString() + j.toString())
+                    }
+                    break
+                } else{
+                    validMoves.push((i).toString() + j.toString())
+                }
+                i = i + 1
+                j = j - 1
+            }
+
+            i = x - 1
+            j = y + 1
+            while( i >= 0  & j <= 7){
+                if(board[i][j].part != -1 ){
+                    if (board[i][j].side != side ){
+                        validMoves.push((i).toString() + j.toString())
+                    }
+                    break
+                } else{
+                    validMoves.push((i).toString() + j.toString())
+                }
+                i = i - 1
+                j = j + 1
+            }
+
+            i = x + 1
+            j = y + 1
+            while( i <= 7  & j <= 7){
+                if(board[i][j].part != -1 ){
+                    if (board[i][j].side != side ){
+                        validMoves.push((i).toString() + j.toString())
+                    }
+                    break
+                } else{
+                    validMoves.push((i).toString() + j.toString())
+                }
+                i = i + 1
+                j = j + 1
+            }
+        }
+
+        //queen
+        if(p1.props.part === 4){
+            for(let i = x + 1; i <= 7; i++){
+                if(board[i][y].part != -1 ){
+                    if (board[i][y].side != side ){
+                        validMoves.push((i).toString() + y.toString())
+                    }
+                    break
+                } else {
+                    validMoves.push((i).toString() + y.toString())
+                }
+            }
+
+            for(let i = x - 1; i >= 0; i--){
+                if(board[i][y].part != -1 ){
+                    if (board[i][y].side != side ){
+                        validMoves.push((i).toString() + y.toString())
+                    }
+                    break
+                } else {
+                    validMoves.push((i).toString() + y.toString())
+                }
+            }
+
+            for(let i = y - 1; i >= 0; i--){
+                if(board[x][i].part != -1 ){
+                    if (board[x][i].side != side ){
+                        validMoves.push((x).toString() + i.toString())
+                    }
+                    break
+                } else {
+                    validMoves.push((x).toString() + i.toString())
+                }
+            }
+
+            for(let i = y + 1; i <= 7; i++){
+                if(board[x][i].part != -1 ){
+                    if (board[x][i].side != side ){
+                        validMoves.push((x).toString() + i.toString())
+                    }
+                    break
+                } else {
+                    validMoves.push((x).toString() + i.toString())
+                }
+            }
+
+
+            let i = x - 1
+            let j = y - 1
+            while( i >= 0 & j>=0){
+                if(board[i][j].part != -1 ){
+                    if (board[i][j].side != side ){
+                        validMoves.push((i).toString() + j.toString())
+                    }
+                    break
+                } else{
+                    validMoves.push((i).toString() + j.toString())
+                }
+                i = i - 1
+                j = j - 1
+            }
+
+            i = x + 1
+            j = y - 1
+            while( i <=7  & j>=0){
+                if(board[i][j].part != -1 ){
+                    if (board[i][j].side != side ){
+                        validMoves.push((i).toString() + j.toString())
+                    }
+                    break
+                } else{
+                    validMoves.push((i).toString() + j.toString())
+                }
+                i = i + 1
+                j = j - 1
+            }
+
+            i = x - 1
+            j = y + 1
+            while( i >= 0  & j <= 7){
+                if(board[i][j].part != -1 ){
+                    if (board[i][j].side != side ){
+                        validMoves.push((i).toString() + j.toString())
+                    }
+                    break
+                } else{
+                    validMoves.push((i).toString() + j.toString())
+                }
+                i = i - 1
+                j = j + 1
+            }
+
+            i = x + 1
+            j = y + 1
+            while( i <= 7  & j <= 7){
+                if(board[i][j].part != -1 ){
+                    if (board[i][j].side != side ){
+                        validMoves.push((i).toString() + j.toString())
+                    }
+                    break
+                } else{
+                    validMoves.push((i).toString() + j.toString())
+                }
+                i = i + 1
+                j = j + 1
+            }
+        }
+
+        if( p1.props.part === 5){
+            if( x - 1 >= 0){
+                if( board[x-1][y].side != side){
+                    validMoves.push((x-1).toString() + y.toString())
+                }
+                if( y-1 >= 0) {
+                    if (board[x - 1][y - 1].side != side) {
+                        validMoves.push((x - 1).toString() + (y - 1).toString())
+                    }
+                }
+                if(y + 1 <= 7) {
+                    if (board[x - 1][y + 1].side != side) {
+                        validMoves.push((x - 1).toString() + (y + 1).toString())
+                    }
+                }
+            }
+
+            if(x + 1 <= 7){
+                if( board[x+1][y].side != side){
+                    validMoves.push((x+1).toString() + y.toString())
+                }
+                if( y-1 >= 0) {
+                    if (board[x + 1][y - 1].side != side) {
+                        validMoves.push((x + 1).toString() + (y - 1).toString())
+                    }
+                }
+                if(y + 1 <= 7) {
+                    if (board[x + 1][y + 1].side != side) {
+                        validMoves.push((x + 1).toString() + (y + 1).toString())
+                    }
+                }
+            }
+
+            if( y - 1 >= 0){
+                if( board[x][y - 1].side != side){
+                    validMoves.push((x).toString() + (y - 1).toString())
+                }
+            }
+
+            if( y + 1 <= 7){
+                if( board[x][y + 1].side != side){
+                    validMoves.push((x).toString() + (y + 1).toString())
+                }
+            }
+
+        }
+
+
+
+        //end rook
+        console.log(validMoves)
+
+        if(validMoves.includes(xy2)){
+
+            return true;
+        }
+        return false;
     }
 
     checkStartPiece(x, y){
