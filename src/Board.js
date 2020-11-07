@@ -9,13 +9,25 @@ class Tile extends React.Component{
 
     constructor(props) {
         super(props);
-        this.state = {current: <ChessPiece part = {props.part} side = {props.side}/>};
+        this.state = {current: <ChessPiece part = {props.part} side = {props.side} isSelected = {false}/>};
         this.changeState = this.changeState.bind(this)
         this.doState = this.doState.bind(this)
+        this.selectTile = this.selectTile.bind(this)
+        this.deselectTile = this.deselectTile.bind(this)
         this.xy = this.props.x.toString() + this.props.y.toString()
+        this.objRef = React.createRef();
+        //this.props.isSelected = false
     }
 
-
+    selectTile()
+    {
+        this.state.isSelected = true
+    }
+    
+    deselectTile()
+    {
+        this.state.isSelected = false
+    }
 
     selectSquare()
     {
@@ -23,6 +35,7 @@ class Tile extends React.Component{
         if (parentState.tileSelected === 0 & this.props.part === -1){
             return
         }
+        this.selectTile()
         this.props.updateParentState(this)
     }
 
@@ -40,8 +53,9 @@ class Tile extends React.Component{
 
     render()
     {
-
-        return (
+        if(!this.state.isSelected)
+        {
+            return (
             <div
                 className={this.props.tileColor == "#484848" ? 'tile black' : 'tile white'}
                 onClick={this.selectSquare.bind(this)}
@@ -53,8 +67,24 @@ class Tile extends React.Component{
                     <span className={"tooltiptext"}>{this.props.x},{this.props.y}</span>
                 </div>
             </div>
-
-        );
+            );
+        }
+        else
+        {
+            return(
+            <div
+                className={'tile selected'}
+                onClick={this.selectSquare.bind(this)}
+                x = {this.props.x}
+                y = {this.props.y}
+                piece = {this.props.piece}
+                >
+                <div className={"tooltip"}> {this.state.current}
+                    <span className={"tooltiptext"}>{this.props.x},{this.props.y}</span>
+                </div>
+            </div>
+            );
+        }
     }
 }
 
@@ -62,7 +92,7 @@ class Board extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0};
+        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0, tiles: []};
     }
 
 
@@ -82,6 +112,8 @@ class Board extends React.Component {
     updateState(tile, newRef){
         if(this.state.tileSelected === 0){
             this.setState({tileSelected: 1, tile1: tile})
+            this.updateSelectedSelect(tile)
+            tile.selectTile()
 
         }else {
 
@@ -90,9 +122,50 @@ class Board extends React.Component {
                 tile.doState()
                 this.state.tile1.changeState()
             }
+            this.updateSelectedDeselect(this.state.tile1)
+            tile.deselectTile()
+            this.state.tile1.deselectTile()
             this.setState({tileSelected: 0, tile1: "", tile2: ""})
 
 
+        }
+    }
+
+    updateSelectedSelect(tile)
+    {
+        let moves = []
+        moves = this.getValidMoves(tile, tile.xy)
+        console.log(this.state.tiles)
+        for(let i = 0; i < 8; i++)
+        {
+            for(let j = 0; j < 8; j++)
+            {
+                console.log(i.toString() + j.toString() + "  UpdateSelect")
+                console.log(tile.xy + " UpdateSelect TILE")
+                if(moves.includes(i.toString() + j.toString()))
+                {
+                    console.log(this.state.tiles[i * 8 + j])
+                    //this.state.tiles[i * 8 + j].sate.isSelected = true
+                    //WHERE TO HIGHLIGHT TILE i,j
+                }
+            }
+        }
+    }
+
+    updateSelectedDeselect(tile)
+    {
+        let moves = []
+        moves = this.getValidMoves(tile, tile.xy)
+        for(let i = 0; i < 8; i++)
+        {
+            for(let j = 0; j < 8; j++)
+            {
+                if(moves.includes(i.toString() + j.toString()))
+                {
+                    //this.state.tiles[i * 8 + j].deselectTile()
+                    //WHERE TO UNHIGHLIGHT TILE i,j
+                }
+            }
         }
     }
 
@@ -113,7 +186,8 @@ class Board extends React.Component {
                     y:j,
                     tileColor:color,
                     part: this.checkStartPiece(i,j),
-                    side: this.checkSide(i)
+                    side: this.checkSide(i),
+                    
                 }
             }
         }
@@ -121,27 +195,35 @@ class Board extends React.Component {
     }
 
     renderBoard(matrix){
+        this.state.tiles = []
         return matrix.map( (row) => {
             return row.map( (item) => {
+                let obj = <Tile
+                    //type = "Tile"
+                    key = {item.x * 8 + item.y}
+                    //ref={this[`ref${item.x * 8 + item.y}`]}
+                    getParentState = {this.getState.bind(this)}
+                    updateParentState = {this.updateState.bind(this)}
+                    name = {item.x + item.y}
+                    value = {item}
+                    x = {item.x}
+                    y = {item.y}
+                    tileColor = {item.tileColor}
+                    part = {item.part}
+                    side = {item.side}
+                />
+                let div = <div
+                    key = {item.x * row.length + item.y}>
+                    {obj}
+                    {(row[row.length - 1] === item) ? <div className="clear"/> : ""}
+                    </div>
+                this.state.tiles.push(obj)
+                console.log(this.state.tiles[item.x * 8 + item.y])
                 return (
-                    <div
-                        key = {item.x * row.length + item.y}>
-                        <Tile
-                            getParentState = {this.getState.bind(this)}
-                            updateParentState = {this.updateState.bind(this)}
-                            name = {item.x + item.y}
-                            value = {item}
-                            x = {item.x}
-                            y = {item.y}
-                            tileColor = {item.tileColor}
-                            part = {item.part}
-                            side = {item.side}
-
-                        />
-                        {(row[row.length - 1] === item) ? <div className="clear"/> : ""}
-                    </div>);
+                       div
+                );
             })
-        });
+        });  
     }
 
 
@@ -162,7 +244,16 @@ class Board extends React.Component {
 
     }
 
-    isValidMove(p1, xy1, p2, xy2){
+    isValidMove(p1, xy1, p2, xy2)
+    {
+        if(this.getValidMoves(p1, xy1).includes(xy2)){
+
+            return true;
+        }
+        return false;
+    }
+
+    getValidMoves(p1, xy1){
         let x = parseInt(xy1[0], 10)
         let y = parseInt(xy1[1], 10)
         let side = p1.props.side
@@ -555,11 +646,7 @@ class Board extends React.Component {
         //end rook
         console.log(validMoves)
 
-        if(validMoves.includes(xy2)){
-
-            return true;
-        }
-        return false;
+        return validMoves
     }
 
     checkStartPiece(x, y){
