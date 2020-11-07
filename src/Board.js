@@ -186,7 +186,7 @@ class Board extends React.Component {
                     y:j,
                     tileColor:color,
                     part: this.checkStartPiece(i,j),
-                    side: this.checkSide(i),
+                    side: this.checkSide(i)
                     
                 }
             }
