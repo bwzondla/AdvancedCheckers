@@ -30,6 +30,7 @@ function App() {
   return (
       <div className={"background"}>
           <div className={"header"}>
+              <p>Jack test</p>
               <PauseMenu></PauseMenu>
           </div>
 
