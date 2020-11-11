@@ -20,6 +20,18 @@ class Tile extends React.Component{
     selectSquare()
     {
         var parentState = this.props.getParentState();
+
+        //if white turn and select black piece, nothing happens
+        if (parentState.pTurn === true & this.props.side === 1)
+        {
+            return
+        }
+
+        //if black turn and select white piece, nothing happens
+        if (parentState.pTurn === false & this.props.side === 0)
+        {
+            return
+        }
         if (parentState.tileSelected === 0 & this.props.part === -1){
             return
         }
@@ -62,7 +74,7 @@ class Board extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0};
+        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0, pTurn: true};
     }
 
 
@@ -89,6 +101,7 @@ class Board extends React.Component {
                 this.changeGameState(this.state.tile1.xy, tile.xy)
                 tile.doState()
                 this.state.tile1.changeState()
+                this.state.pTurn = !this.state.pTurn; // Switches player turn
             }
             this.setState({tileSelected: 0, tile1: "", tile2: ""})
 
@@ -170,6 +183,9 @@ class Board extends React.Component {
         let board = this.state.gameState
 
         let validMoves = []
+
+
+
         //is pawn
         if (p1.props.part === 0){
             //is white pawn
