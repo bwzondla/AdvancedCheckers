@@ -1,7 +1,6 @@
 import React from 'react';
 import './Board.css';
 import ReactDOM from "react-dom";
-import Piece from "./Piece";
 import ChessPiece from "./Piece";
 
 
@@ -15,22 +14,54 @@ class Tile extends React.Component{
         this.selectTile = this.selectTile.bind(this)
         this.deselectTile = this.deselectTile.bind(this)
         this.xy = this.props.x.toString() + this.props.y.toString()
-        this.objRef = React.createRef();
-        //this.props.isSelected = false
     }
+    
+    seltile = s => this.setState({isSelected: !this.state.isSelected})
 
+    //runs anytime any state changes in any component
+    componentDidUpdate(prevProps)
+    {
+        //if this tile is not selected
+        if(this.state.isSelected === false)
+        {
+            //loop through board's select list. if this tile's xy is in it, highlight it
+            for(var i = 0; i < this.props.getParentState().sel.length; i++)
+            {
+                if(this.props.getParentState().sel[i] === this.xy)
+                {
+                    this.selectTile()
+                }
+            }
+        }
+        else//if this tile is selected
+        {
+            //loop through board's deselect list. if this tile's xy is in it. unhighlight it
+            for(var i = 0; i < this.props.getParentState().desel.length; i++)
+            {
+                if(this.props.getParentState().desel[i] === this.xy)
+                {
+                    this.deselectTile() 
+                }
+            }
+        }
+        
+    }
+    
     selectTile()
     {
-        this.state.isSelected = true
+        //change tile to highlighted state
+        this.setState({isSelected: true})
     }
     
     deselectTile()
     {
-        this.state.isSelected = false
+        //change tile to normal color
+        this.setState({isSelected: false})
     }
 
     selectSquare()
     {
+        //Board's state
         var parentState = this.props.getParentState();
         if (parentState.tileSelected === 0 & this.props.part === -1){
             return
@@ -53,11 +84,11 @@ class Tile extends React.Component{
 
     render()
     {
-        if(!this.state.isSelected)
+        if(!this.state.isSelected)//render tile as normal
         {
             return (
             <div
-                className={this.props.tileColor == "#484848" ? 'tile black' : 'tile white'}
+                className={this.props.tileColor === "#484848" ? 'tile black' : 'tile white'}
                 onClick={this.selectSquare.bind(this)}
                 x = {this.props.x}
                 y = {this.props.y}
@@ -69,7 +100,7 @@ class Tile extends React.Component{
             </div>
             );
         }
-        else
+        else//render tile as highlighted background
         {
             return(
             <div
@@ -89,10 +120,10 @@ class Tile extends React.Component{
 }
 
 class Board extends React.Component {
-
+//Board is Love Board is Life
     constructor(props) {
         super(props);
-        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0, tiles: []};
+        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0, sel: [], desel: [], update: 0};
     }
 
 
@@ -135,38 +166,30 @@ class Board extends React.Component {
     {
         let moves = []
         moves = this.getValidMoves(tile, tile.xy)
-        console.log(this.state.tiles)
+        //clear the deselect list
+        this.state.desel = []
+        //cycle through all tiles. if it is a valid move, add it to the select list
         for(let i = 0; i < 8; i++)
         {
             for(let j = 0; j < 8; j++)
-            {
-                console.log(i.toString() + j.toString() + "  UpdateSelect")
-                console.log(tile.xy + " UpdateSelect TILE")
+            {             
                 if(moves.includes(i.toString() + j.toString()))
                 {
-                    console.log(this.state.tiles[i * 8 + j])
-                    //this.state.tiles[i * 8 + j].sate.isSelected = true
-                    //WHERE TO HIGHLIGHT TILE i,j
+                    this.state.sel.push(i.toString() + j.toString())  
                 }
             }
         }
+        this.state.update++
     }
 
     updateSelectedDeselect(tile)
     {
         let moves = []
         moves = this.getValidMoves(tile, tile.xy)
-        for(let i = 0; i < 8; i++)
-        {
-            for(let j = 0; j < 8; j++)
-            {
-                if(moves.includes(i.toString() + j.toString()))
-                {
-                    //this.state.tiles[i * 8 + j].deselectTile()
-                    //WHERE TO UNHIGHLIGHT TILE i,j
-                }
-            }
-        }
+        //add all selected tiles to the deselect list and clear select list
+        this.state.desel = this.state.sel
+        this.state.sel = []
+        this.state.update--
     }
 
     createEmptyBoard(){
@@ -186,8 +209,7 @@ class Board extends React.Component {
                     y:j,
                     tileColor:color,
                     part: this.checkStartPiece(i,j),
-                    side: this.checkSide(i)
-                    
+                    side: this.checkSide(i),
                 }
             }
         }
@@ -195,13 +217,10 @@ class Board extends React.Component {
     }
 
     renderBoard(matrix){
-        this.state.tiles = []
         return matrix.map( (row) => {
             return row.map( (item) => {
                 let obj = <Tile
-                    //type = "Tile"
                     key = {item.x * 8 + item.y}
-                    //ref={this[`ref${item.x * 8 + item.y}`]}
                     getParentState = {this.getState.bind(this)}
                     updateParentState = {this.updateState.bind(this)}
                     name = {item.x + item.y}
@@ -213,12 +232,11 @@ class Board extends React.Component {
                     side = {item.side}
                 />
                 let div = <div
+                    id = {item.x.toString() + item.y.toString()}
                     key = {item.x * row.length + item.y}>
                     {obj}
                     {(row[row.length - 1] === item) ? <div className="clear"/> : ""}
                     </div>
-                this.state.tiles.push(obj)
-                console.log(this.state.tiles[item.x * 8 + item.y])
                 return (
                        div
                 );
@@ -239,7 +257,7 @@ class Board extends React.Component {
 
         tempMatrix[x2][y2] = {x:x2,y:y2,tileColor: tempMatrix[x2][y2].tileColor, part: tempMatrix[x1][y1].part, side: tempMatrix[x1][y1].side}
         tempMatrix[x1][y1] = {x:x1,y:y1, tileColor: tempMatrix[x1][y1].tileColor, part: -1, side: -1}
-        console.log(tempMatrix)
+        //console.log(tempMatrix)
         this.setState({gameState: tempMatrix, moveCount: this.moveCount + 1})
 
     }
@@ -275,12 +293,12 @@ class Board extends React.Component {
                 }
 
                 if (y - 1 >= 0) {
-                    if (board[x - 1][y - 1].side != -1 & board[x - 1][y - 1].side != side) {
+                    if (board[x - 1][y - 1].side !== -1 & board[x - 1][y - 1].side !== side) {
                         validMoves.push((x - 1).toString() + (y - 1).toString())
                     }
                 }
                 if (y + 1 <= 7) {
-                    if (board[x - 1][y + 1].side != -1 & board[x - 1][y + 1].side != side) {
+                    if (board[x - 1][y + 1].side !== -1 & board[x - 1][y + 1].side !== side) {
                         validMoves.push((x - 1).toString() + (y - 1).toString())
                     }
 
@@ -299,12 +317,12 @@ class Board extends React.Component {
                 }
 
                 if (y - 1 >= 0) {
-                    if (board[x + 1][y - 1].side != -1 & board[x + 1][y - 1].side != side) {
+                    if (board[x + 1][y - 1].side !== -1 & board[x + 1][y - 1].side !== side) {
                         validMoves.push((x + 1).toString() + (y - 1).toString())
                     }
                 }
                 if (y + 1 <= 7) {
-                    if (board[x + 1][y + 1].side != -1 & board[x + 1][y + 1].side != side) {
+                    if (board[x + 1][y + 1].side !== -1 & board[x + 1][y + 1].side !== side) {
                         validMoves.push((x + 1).toString() + (y - 1).toString())
                     }
                 }
@@ -318,7 +336,7 @@ class Board extends React.Component {
             //same for both sides
             for(let i = x + 1; i <= 7; i++){
                 if(board[i][y].part != -1 ){
-                    if (board[i][y].side != side ){
+                    if (board[i][y].side !== side ){
                         validMoves.push((i).toString() + y.toString())
                     }
                     break
@@ -328,8 +346,8 @@ class Board extends React.Component {
             }
 
             for(let i = x - 1; i >= 0; i--){
-                if(board[i][y].part != -1 ){
-                    if (board[i][y].side != side ){
+                if(board[i][y].part !== -1 ){
+                    if (board[i][y].side !== side ){
                         validMoves.push((i).toString() + y.toString())
                     }
                     break
@@ -339,8 +357,8 @@ class Board extends React.Component {
             }
 
             for(let i = y - 1; i >= 0; i--){
-                if(board[x][i].part != -1 ){
-                    if (board[x][i].side != side ){
+                if(board[x][i].part !== -1 ){
+                    if (board[x][i].side !== side ){
                         validMoves.push((x).toString() + i.toString())
                     }
                     break
@@ -350,8 +368,8 @@ class Board extends React.Component {
             }
 
             for(let i = y + 1; i <= 7; i++){
-                if(board[x][i].part != -1 ){
-                    if (board[x][i].side != side ){
+                if(board[x][i].part !== -1 ){
+                    if (board[x][i].side !== side ){
                         validMoves.push((x).toString() + i.toString())
                     }
                     break
@@ -367,12 +385,12 @@ class Board extends React.Component {
 
             if( y - 2 >= 0){
                 if (x - 1 >= 0){
-                    if(board[x - 1][y - 2].side != side){
+                    if(board[x - 1][y - 2].side !== side){
                         validMoves.push((x - 1).toString() + (y-2).toString())
                     }
                 }
                 if (x + 1 <= 7){
-                    if(board[x+1][y-2].side != side){
+                    if(board[x+1][y-2].side !== side){
                         validMoves.push((x + 1).toString() + (y-2).toString())
 
                     }
@@ -381,12 +399,12 @@ class Board extends React.Component {
 
             if (y + 2 <= 7){
                 if (x - 1 >= 0){
-                    if(board[x - 1][y + 2].side != side){
+                    if(board[x - 1][y + 2].side !== side){
                         validMoves.push((x - 1).toString() + (y+2).toString())
                     }
                 }
                 if (x + 1 <= 7){
-                    if(board[x+1][y+2].side != side){
+                    if(board[x+1][y+2].side !== side){
                         validMoves.push((x + 1).toString() + (y+2).toString())
 
                     }
@@ -395,12 +413,12 @@ class Board extends React.Component {
 
             if (x + 2 <= 7){
                 if (y - 1 >= 0){
-                    if(board[x + 2][y - 1].side != side){
+                    if(board[x + 2][y - 1].side !== side){
                         validMoves.push((x + 2).toString() + (y - 1).toString())
                     }
                 }
                 if (y + 1 <= 7){
-                    if(board[x + 1][y + 1].side != side){
+                    if(board[x + 1][y + 1].side !== side){
                         validMoves.push((x + 2).toString() + (y + 1 ).toString())
 
                     }
@@ -409,12 +427,12 @@ class Board extends React.Component {
 
             if (x - 2 >= 0){
                 if (y - 1 >= 0){
-                    if(board[x - 2][y - 1].side != side){
+                    if(board[x - 2][y - 1].side !== side){
                         validMoves.push((x - 2).toString() + (y - 1).toString())
                     }
                 }
                 if (y + 1 <= 7){
-                    if(board[x - 2][y + 1].side != side){
+                    if(board[x - 2][y + 1].side !== side){
                         validMoves.push((x - 2).toString() + (y + 1 ).toString())
 
                     }
@@ -428,8 +446,8 @@ class Board extends React.Component {
             let i = x - 1
             let j = y - 1
             while( i >= 0 & j>=0){
-                if(board[i][j].part != -1 ){
-                    if (board[i][j].side != side ){
+                if(board[i][j].part !== -1 ){
+                    if (board[i][j].side !== side ){
                         validMoves.push((i).toString() + j.toString())
                     }
                     break
@@ -443,8 +461,8 @@ class Board extends React.Component {
             i = x + 1
             j = y - 1
             while( i <=7  & j>=0){
-                if(board[i][j].part != -1 ){
-                    if (board[i][j].side != side ){
+                if(board[i][j].part !== -1 ){
+                    if (board[i][j].side !== side ){
                         validMoves.push((i).toString() + j.toString())
                     }
                     break
@@ -458,8 +476,8 @@ class Board extends React.Component {
             i = x - 1
             j = y + 1
             while( i >= 0  & j <= 7){
-                if(board[i][j].part != -1 ){
-                    if (board[i][j].side != side ){
+                if(board[i][j].part !== -1 ){
+                    if (board[i][j].side !== side ){
                         validMoves.push((i).toString() + j.toString())
                     }
                     break
@@ -473,8 +491,8 @@ class Board extends React.Component {
             i = x + 1
             j = y + 1
             while( i <= 7  & j <= 7){
-                if(board[i][j].part != -1 ){
-                    if (board[i][j].side != side ){
+                if(board[i][j].part !== -1 ){
+                    if (board[i][j].side !== side ){
                         validMoves.push((i).toString() + j.toString())
                     }
                     break
@@ -489,8 +507,8 @@ class Board extends React.Component {
         //queen
         if(p1.props.part === 4){
             for(let i = x + 1; i <= 7; i++){
-                if(board[i][y].part != -1 ){
-                    if (board[i][y].side != side ){
+                if(board[i][y].part !== -1 ){
+                    if (board[i][y].side !== side ){
                         validMoves.push((i).toString() + y.toString())
                     }
                     break
@@ -500,8 +518,8 @@ class Board extends React.Component {
             }
 
             for(let i = x - 1; i >= 0; i--){
-                if(board[i][y].part != -1 ){
-                    if (board[i][y].side != side ){
+                if(board[i][y].part !== -1 ){
+                    if (board[i][y].side !== side ){
                         validMoves.push((i).toString() + y.toString())
                     }
                     break
@@ -511,8 +529,8 @@ class Board extends React.Component {
             }
 
             for(let i = y - 1; i >= 0; i--){
-                if(board[x][i].part != -1 ){
-                    if (board[x][i].side != side ){
+                if(board[x][i].part !== -1 ){
+                    if (board[x][i].side !== side ){
                         validMoves.push((x).toString() + i.toString())
                     }
                     break
@@ -522,8 +540,8 @@ class Board extends React.Component {
             }
 
             for(let i = y + 1; i <= 7; i++){
-                if(board[x][i].part != -1 ){
-                    if (board[x][i].side != side ){
+                if(board[x][i].part !== -1 ){
+                    if (board[x][i].side !== side ){
                         validMoves.push((x).toString() + i.toString())
                     }
                     break
@@ -536,8 +554,8 @@ class Board extends React.Component {
             let i = x - 1
             let j = y - 1
             while( i >= 0 & j>=0){
-                if(board[i][j].part != -1 ){
-                    if (board[i][j].side != side ){
+                if(board[i][j].part !== -1 ){
+                    if (board[i][j].side !== side ){
                         validMoves.push((i).toString() + j.toString())
                     }
                     break
@@ -551,8 +569,8 @@ class Board extends React.Component {
             i = x + 1
             j = y - 1
             while( i <=7  & j>=0){
-                if(board[i][j].part != -1 ){
-                    if (board[i][j].side != side ){
+                if(board[i][j].part !== -1 ){
+                    if (board[i][j].side !== side ){
                         validMoves.push((i).toString() + j.toString())
                     }
                     break
@@ -566,8 +584,8 @@ class Board extends React.Component {
             i = x - 1
             j = y + 1
             while( i >= 0  & j <= 7){
-                if(board[i][j].part != -1 ){
-                    if (board[i][j].side != side ){
+                if(board[i][j].part !== -1 ){
+                    if (board[i][j].side !== side ){
                         validMoves.push((i).toString() + j.toString())
                     }
                     break
@@ -581,8 +599,8 @@ class Board extends React.Component {
             i = x + 1
             j = y + 1
             while( i <= 7  & j <= 7){
-                if(board[i][j].part != -1 ){
-                    if (board[i][j].side != side ){
+                if(board[i][j].part !== -1 ){
+                    if (board[i][j].side !== side ){
                         validMoves.push((i).toString() + j.toString())
                     }
                     break
@@ -596,45 +614,45 @@ class Board extends React.Component {
 
         if( p1.props.part === 5){
             if( x - 1 >= 0){
-                if( board[x-1][y].side != side){
+                if( board[x-1][y].side !== side){
                     validMoves.push((x-1).toString() + y.toString())
                 }
                 if( y-1 >= 0) {
-                    if (board[x - 1][y - 1].side != side) {
+                    if (board[x - 1][y - 1].side !== side) {
                         validMoves.push((x - 1).toString() + (y - 1).toString())
                     }
                 }
                 if(y + 1 <= 7) {
-                    if (board[x - 1][y + 1].side != side) {
+                    if (board[x - 1][y + 1].side !== side) {
                         validMoves.push((x - 1).toString() + (y + 1).toString())
                     }
                 }
             }
 
             if(x + 1 <= 7){
-                if( board[x+1][y].side != side){
+                if( board[x+1][y].side !== side){
                     validMoves.push((x+1).toString() + y.toString())
                 }
                 if( y-1 >= 0) {
-                    if (board[x + 1][y - 1].side != side) {
+                    if (board[x + 1][y - 1].side !== side) {
                         validMoves.push((x + 1).toString() + (y - 1).toString())
                     }
                 }
                 if(y + 1 <= 7) {
-                    if (board[x + 1][y + 1].side != side) {
+                    if (board[x + 1][y + 1].side !== side) {
                         validMoves.push((x + 1).toString() + (y + 1).toString())
                     }
                 }
             }
 
             if( y - 1 >= 0){
-                if( board[x][y - 1].side != side){
+                if( board[x][y - 1].side !== side){
                     validMoves.push((x).toString() + (y - 1).toString())
                 }
             }
 
             if( y + 1 <= 7){
-                if( board[x][y + 1].side != side){
+                if( board[x][y + 1].side !== side){
                     validMoves.push((x).toString() + (y + 1).toString())
                 }
             }
