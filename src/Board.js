@@ -74,7 +74,7 @@ class Board extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0, pTurn: true};
+        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0, sel: [], desel: [], update: 0, pTurn: true};
     }
 
 
