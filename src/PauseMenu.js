@@ -8,11 +8,12 @@ class Timer extends React.Component{
         super(props);
     }
 
+
     render()
     {
         return (
             <div>
-                <button className="button" >Restart</button>
+                <button className="button" onClick ={() => window.location.reload(false)}>Restart</button>
                 <button className="button" >Pause</button>
             </div>
         );
