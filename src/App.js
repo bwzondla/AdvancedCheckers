@@ -27,17 +27,20 @@ function App() {
   );
 
    */
+    let reference = React.createRef()
+    let timer = <Timer ref = {reference}></Timer>
+
   return (
       <div className={"background"}>
           <div className={"header"}>
               <p>Chess</p>
-              <PauseMenu></PauseMenu>
+              <PauseMenu pause = {reference}></PauseMenu>
           </div>
 
           <div className={"row"}>
 
               <div className={"column side"}>
-                  <Timer></Timer>
+                  {timer}
               </div>
               <div className={"column middle"}>
                   <Board></Board>

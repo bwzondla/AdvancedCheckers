@@ -65,13 +65,13 @@ class Tile extends React.Component{
         var parentState = this.props.getParentState();
 
         //if white turn and select black piece, nothing happens
-        if (parentState.pTurn === true & this.props.side === 1)
+        if (parentState.pTurn === true & this.props.side === 1 & parentState.tileSelected === 0)
         {
             return
         }
 
         //if black turn and select white piece, nothing happens
-        if (parentState.pTurn === false & this.props.side === 0)
+        if (parentState.pTurn === false & this.props.side === 0 & parentState.tileSelected === 0)
         {
             return
         }
@@ -315,7 +315,7 @@ class Board extends React.Component {
                 }
                 if (y + 1 <= 7) {
                     if (board[x - 1][y + 1].side !== -1 & board[x - 1][y + 1].side !== side) {
-                        validMoves.push((x - 1).toString() + (y - 1).toString())
+                        validMoves.push((x - 1).toString() + (y + 1).toString())
                     }
 
                 }
@@ -339,7 +339,7 @@ class Board extends React.Component {
                 }
                 if (y + 1 <= 7) {
                     if (board[x + 1][y + 1].side !== -1 & board[x + 1][y + 1].side !== side) {
-                        validMoves.push((x + 1).toString() + (y - 1).toString())
+                        validMoves.push((x + 1).toString() + (y + 1).toString())
                     }
                 }
             }
@@ -434,7 +434,8 @@ class Board extends React.Component {
                     }
                 }
                 if (y + 1 <= 7){
-                    if(board[x + 1][y + 1].side !== side){
+
+                    if(board[x + 2][y + 1].side !== side){
                         validMoves.push((x + 2).toString() + (y + 1 ).toString())
 
                     }
