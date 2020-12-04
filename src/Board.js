@@ -701,12 +701,6 @@ class Board extends React.Component {
 
     checkAllPiecesIfCheck(p1, xy1){
         let tempGameState = [...this.state.gameState]
-        if (tempGameState == this.state.gameState){
-            console.log("weak")
-            if( tempGameState === this.state.gameState){
-                console.log("strong oh no")
-            }
-        }
         let side = p1.props.side
 
         let x1 = p1.props.x
@@ -728,12 +722,7 @@ class Board extends React.Component {
             for(let j = 0; j < 8 ; j++){
                 //console.log(tempGameState[i][j])
                 if(tempGameState[i][j].side !== side){
-                    if(tempGameState[i][j].part == 4){
-                        console.log(i.toString() + j.toString())
-                        console.log(this.getValidMoves(tempGameState[i][j], i.toString() + j.toString(), tempGameState, true))
-                    }
                     if(this.checkMoveCheck(i.toString()+j.toString(), !side, tempGameState)){
-                        console.log("We freaking returnd true")
                         tempGameState[x2][y2] = temp2
                         tempGameState[x1][y1] = temp1
                         return true;
