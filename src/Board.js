@@ -135,15 +135,15 @@ class Board extends React.Component {
 //Board is Love Board is Life
     constructor(props) {
         super(props);
-        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0, sel: [], desel: [], update: 0, pTurn: true};
+        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0, sel: [], desel: [], update: 0, pTurn: true, inCheck: false};
     }
 
 
     render(){
         return (
             <div className={"board"}>{this.state.tileSelected}
+                {this.state.inCheck.toString()}
                 {this.renderBoard(this.state.gameState)}
-                {this.state.moveCount}
             </div>
         )
     }
@@ -162,6 +162,7 @@ class Board extends React.Component {
 
             if(this.isValidMove(this.state.tile1, this.state.tile1.xy, tile, tile.xy)){
                 this.changeGameState(this.state.tile1.xy, tile.xy)
+                this.setState({inCheck: this.checkMoveCheck(tile.xy, tile, this.state.gameState)})
                 tile.doState()
                 this.state.tile1.changeState()
                 this.state.pTurn = !this.state.pTurn; // Switches player turn
@@ -178,7 +179,7 @@ class Board extends React.Component {
     updateSelectedSelect(tile)
     {
         let moves = []
-        moves = this.getValidMoves(tile, tile.xy)
+        moves = this.getValidMoves(tile, tile.xy, this.state.gameState)
         //clear the deselect list
         this.state.desel = []
         //cycle through all tiles. if it is a valid move, add it to the select list
@@ -198,7 +199,7 @@ class Board extends React.Component {
     updateSelectedDeselect(tile)
     {
         let moves = []
-        moves = this.getValidMoves(tile, tile.xy)
+        moves = this.getValidMoves(tile, tile.xy, this.state.gameState)
         //add all selected tiles to the deselect list and clear select list
         this.state.desel = this.state.sel
         this.state.sel = []
@@ -266,7 +267,7 @@ class Board extends React.Component {
         let x2 = parseInt(to[0], 10)
         let y2 = parseInt(to[1], 10)
 
-        let tempMatrix = this.state.gameState
+        let tempMatrix = [...this.state.gameState]
 
         tempMatrix[x2][y2] = {x:x2,y:y2,tileColor: tempMatrix[x2][y2].tileColor, part: tempMatrix[x1][y1].part, side: tempMatrix[x1][y1].side}
         tempMatrix[x1][y1] = {x:x1,y:y1, tileColor: tempMatrix[x1][y1].tileColor, part: -1, side: -1}
@@ -277,28 +278,41 @@ class Board extends React.Component {
 
     isValidMove(p1, xy1, p2, xy2)
     {
-        if(this.getValidMoves(p1, xy1).includes(xy2)){
 
+        if(this.getValidMoves(p1, xy1, this.state.gameState).includes(xy2)){
+
+            // if this gets triggered then the move you wanted to do makes your king in check
+            if (this.checkAllPiecesIfCheck(p1, xy2)) {
+                return false
+
+            }
             return true;
         }
         return false;
     }
 
-    getValidMoves(p1, xy1){
+    getValidMoves(p1, xy1, matrix, checkingMove = false){
         let x = parseInt(xy1[0], 10)
         let y = parseInt(xy1[1], 10)
-        let side = p1.props.side
-        console.log(p1.props.part)
-        let board = this.state.gameState
+        let side = null
+        let part = null
+        if (checkingMove){
+            side = p1.side
+            part = p1.part
+        } else {
+            side = p1.props.side
+            part = p1.props.part
+        }
+        let board = matrix
 
         let validMoves = []
 
 
 
         //is pawn
-        if (p1.props.part === 0){
+        if (part === 0){
             //is white pawn
-            if (p1.props.side === 0) {
+            if (side === 0) {
                 if (board[x - 1][y].part === -1) {
                     validMoves.push((x-1).toString() + y.toString())
                     if ( x === 6){
@@ -322,7 +336,7 @@ class Board extends React.Component {
             }
 
             //is black pawn
-            if( p1.props.side === 1){
+            if( side === 1){
                 if (board[x + 1][y].part === -1) {
                     validMoves.push((x+1).toString() + y.toString())
                     if ( x === 1){
@@ -348,7 +362,7 @@ class Board extends React.Component {
         //end pawn
 
         //begin rook
-        if(p1.props.part === 1){
+        if(part === 1){
             //same for both sides
             for(let i = x + 1; i <= 7; i++){
                 if(board[i][y].part != -1 ){
@@ -397,7 +411,7 @@ class Board extends React.Component {
         }
 
         //knight
-        if( p1.props.part === 2){
+        if( part === 2){
 
             if( y - 2 >= 0){
                 if (x - 1 >= 0){
@@ -459,7 +473,7 @@ class Board extends React.Component {
         }
 
         //bishop
-        if( p1.props.part === 3){
+        if( part === 3){
             let i = x - 1
             let j = y - 1
             while( i >= 0 & j>=0){
@@ -522,7 +536,7 @@ class Board extends React.Component {
         }
 
         //queen
-        if(p1.props.part === 4){
+        if(part === 4){
             for(let i = x + 1; i <= 7; i++){
                 if(board[i][y].part !== -1 ){
                     if (board[i][y].side !== side ){
@@ -629,7 +643,7 @@ class Board extends React.Component {
             }
         }
 
-        if( p1.props.part === 5){
+        if( part === 5){
             if( x - 1 >= 0){
                 if( board[x-1][y].side !== side){
                     validMoves.push((x-1).toString() + y.toString())
@@ -679,10 +693,69 @@ class Board extends React.Component {
 
 
         //end rook
-        console.log(validMoves)
 
         return validMoves
     }
+
+
+
+    checkAllPiecesIfCheck(p1, xy1){
+        let tempGameState = [...this.state.gameState]
+        let side = p1.props.side
+
+        let x1 = p1.props.x
+        let y1 = p1.props.y
+
+        let x2 = parseInt(xy1[0], 10)
+        let y2 = parseInt(xy1[1], 10)
+
+        let temp1 = tempGameState[x1][y1]
+        let temp2 = tempGameState[x2][y2]
+        tempGameState[x2][y2] = {x:x2,y:y2,tileColor: tempGameState[x2][y2].tileColor, part: tempGameState[x1][y1].part, side: tempGameState[x1][y1].side}
+        tempGameState[x1][y1] = {x:x1,y:y1, tileColor: tempGameState[x1][y1].tileColor, part: -1, side: -1}
+        //this.getValidMoves(tempGameState[i][j], i+j, true)
+        console.log(x1.toString() + y1.toString())
+        console.log(x2.toString() + y2.toString())
+
+
+        for (let i = 0; i < 8; i++){
+            for(let j = 0; j < 8 ; j++){
+                //console.log(tempGameState[i][j])
+                if(tempGameState[i][j].side !== side){
+                    if(this.checkMoveCheck(i.toString()+j.toString(), !side, tempGameState)){
+                        tempGameState[x2][y2] = temp2
+                        tempGameState[x1][y1] = temp1
+                        return true;
+                    }
+                }
+            }
+        }
+
+        tempGameState[x2][y2] = temp2
+        tempGameState[x1][y1] = temp1
+
+
+        return false
+    }
+
+    checkMoveCheck(xy1, side, matrix){
+        let x = parseInt(xy1[0], 10)
+        let y = parseInt(xy1[1], 10)
+        let tempGameState = matrix
+        let moves = this.getValidMoves(tempGameState[x][y], xy1, tempGameState, true)
+
+        for( let i = 0; i < moves.length; i++){
+            let j = parseInt(moves[i][0], 10)
+            let k = parseInt(moves[i][1], 10)
+
+            if (tempGameState[j][k].side !== side & tempGameState[j][k].part === 5){
+                return true
+            }
+        }
+
+        return false
+    }
+
 
     checkStartPiece(x, y){
         if(x === 1 | x === 6){
