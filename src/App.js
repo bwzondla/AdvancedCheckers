@@ -3,8 +3,11 @@ import logo from './logo.svg';
 import './App.css';
 import Board from './Board';
 import Timer from './Timer';
+
 import PauseMenu from './PauseMenu';
+import Graveyard from './Graveyard';
 import Piece from './Piece';
+
 function App() {
   /*
     return (
@@ -27,22 +30,30 @@ function App() {
   );
 
    */
+
+
+    let reference = React.createRef()
+    let timer = <Timer ref = {reference}></Timer>
+    let graveRef = React.createRef()
+    let grave = <Graveyard ref = {graveRef}></Graveyard>
+
   return (
       <div className={"background"}>
           <div className={"header"}>
-              <PauseMenu></PauseMenu>
+              <p>Chess</p>
+              <PauseMenu pause = {reference}></PauseMenu>
           </div>
 
           <div className={"row"}>
 
               <div className={"column side"}>
-                  <Timer></Timer>
+                  {timer}
               </div>
               <div className={"column middle"}>
-                  <Board></Board>
+                  <Board Graveyard = {graveRef}></Board>
               </div>
               <div className={"column side"}>
-                  GraveYard
+                  {grave}
               </div>
           </div>
       </div>

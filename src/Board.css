@@ -50,6 +50,11 @@
     background: #16d795;
 }
 
+.tile.selected {
+    background: #FFFF00;
+
+}
+
 .board{
     position: center;
     padding: 10px;
