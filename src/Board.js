@@ -15,33 +15,30 @@ class Tile extends React.Component{
         this.deselectTile = this.deselectTile.bind(this)
         this.xy = this.props.x.toString() + this.props.y.toString()
     }
-    
-    seltile = s => this.setState({isSelected: !this.state.isSelected})
 
     //runs anytime any state changes in any component
     componentDidUpdate(prevProps)
     {
+        if(!this.props.getParentState().hasUpdate.includes(this.xy))
+        {
+            this.deselectTile()
+            this.props.getParentState().hasUpdate.push(this.xy)
+        }
         //if this tile is not selected
         if(this.state.isSelected === false)
         {
-            //loop through board's select list. if this tile's xy is in it, highlight it
-            for(var i = 0; i < this.props.getParentState().sel.length; i++)
+            //if this tile's xy is in board's select list, highlight it
+            if(this.props.getParentState().sel.includes(this.xy))
             {
-                if(this.props.getParentState().sel[i] === this.xy)
-                {
-                    this.selectTile()
-                }
+                this.selectTile()
             }
         }
         else//if this tile is selected
         {
-            //loop through board's deselect list. if this tile's xy is in it. unhighlight it
-            for(var i = 0; i < this.props.getParentState().desel.length; i++)
+            //if this tile's xy is in board's deselect list. unhighlight it
+            if(this.props.getParentState().desel.includes(this.xy))
             {
-                if(this.props.getParentState().desel[i] === this.xy)
-                {
-                    this.deselectTile() 
-                }
+                this.deselectTile() 
             }
         }
         
@@ -135,7 +132,14 @@ class Board extends React.Component {
 //Board is Love Board is Life
     constructor(props) {
         super(props);
-        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0, sel: [], desel: [], update: 0, pTurn: true, inCheck: false};
+        this.state = {tileSelected: 0, tile1: null, gameState: this.createEmptyBoard(), moveCount: 0, sel: [], desel: [], hasUpdate: [], update: 0, pTurn: true, inCheck: false};
+        for(let i = 0; i < 8; i++)
+        {
+            for(let j = 0; j < 8; j++)
+            {
+                this.state.desel.push(i.toString() + j.toString())
+            }
+        }
     }
 
 
@@ -183,27 +187,21 @@ class Board extends React.Component {
         //clear the deselect list
         this.state.desel = []
         //cycle through all tiles. if it is a valid move, add it to the select list
-        for(let i = 0; i < 8; i++)
+        for(let i = 0; i < moves.length; i++)
         {
-            for(let j = 0; j < 8; j++)
-            {             
-                if(moves.includes(i.toString() + j.toString()))
-                {
-                    this.state.sel.push(i.toString() + j.toString())  
-                }
-            }
+            this.state.sel.push(moves[i])
         }
+        this.state.sel.push(tile.xy)
         this.state.update++
     }
 
     updateSelectedDeselect(tile)
     {
-        let moves = []
-        moves = this.getValidMoves(tile, tile.xy, this.state.gameState)
         //add all selected tiles to the deselect list and clear select list
         this.state.desel = this.state.sel
         this.state.sel = []
         this.state.update--
+        
     }
 
     createEmptyBoard(){
@@ -217,7 +215,6 @@ class Board extends React.Component {
                 } else if ((i & 1) === 1 && (j & 1) === 0){
                     color = "#484848";
                 }
-
                 matrix[i][j] = {
                     x:i,
                     y:j,
