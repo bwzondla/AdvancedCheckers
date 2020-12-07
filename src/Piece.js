@@ -25,13 +25,13 @@ class ChessPiece extends React.Component
             bgColor: "#555555"
         }
     }
-    
+
     clicked = (e) => {
         this.setState({
             bgColor: "#F5F542"
         })
     }
-    
+
     render()
     {
         if(this.props.part === -1){
@@ -43,7 +43,7 @@ class ChessPiece extends React.Component
         {
             if (this.props.part === 0)
             {
-                
+
                 return (
                     <img className={"img"} src={whitepawn} />
                 );
@@ -119,13 +119,13 @@ class ChessPiece extends React.Component
                 );
             }
         }
-        
+
         return (
             <button className="square" style={{background: this.state.bgColor}} onClick={this.clicked}>
                 <img src={piecesubstutute} />
             </button>
         );
-        
+
     }
 }
 
@@ -138,19 +138,19 @@ class Piece extends React.Component
             clicks: 0
         }
     }
-    
+
     renderPiece(i, j)
     {
         return <ChessPiece part = {i} side = {j}/>;
     }
-    
+
     clicked = (e) => {
         let c = this.state.clicks
         this.setState({
             clicks: c + 1
         })
     }
-    
+
     render()
     {
         return (
