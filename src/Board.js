@@ -117,7 +117,6 @@ class Tile extends React.Component{
                     </div>
                 </div>
 
-            </div>
             );
         }
         else//render tile as highlighted background
