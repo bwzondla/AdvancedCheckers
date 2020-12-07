@@ -31,11 +31,11 @@ function App() {
 
    */
 
-
     let reference = React.createRef()
     let timer = <Timer ref = {reference}></Timer>
     let graveRef = React.createRef()
     let grave = <Graveyard ref = {graveRef}></Graveyard>
+
 
   return (
       <div className={"background"}>
