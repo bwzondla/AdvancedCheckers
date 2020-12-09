@@ -194,6 +194,18 @@ class Board extends React.Component {
             tile.deselectTile()
             this.state.tile1.deselectTile()
             this.setState({tileSelected: 0, tile1: "", tile2: ""})
+            //console.log("Checkmate")
+            if(this.checkCheckMate()){
+                let string = ""
+                string += "Gameover: "
+                if (this.state.pTurn){
+                    string += "White"
+                } else {
+                    string += "Black"
+                }
+                string += " Wins!"
+                alert("Gameover")
+            }
 
 
         }
@@ -290,7 +302,6 @@ class Board extends React.Component {
 
         tempMatrix[x2][y2] = {x:x2,y:y2,tileColor: tempMatrix[x2][y2].tileColor, part: tempMatrix[x1][y1].part, side: tempMatrix[x1][y1].side}
         tempMatrix[x1][y1] = {x:x1,y:y1, tileColor: tempMatrix[x1][y1].tileColor, part: -1, side: -1}
-        //console.log(tempMatrix)
         this.setState({gameState: tempMatrix, moveCount: this.moveCount + 1})
 
     }
@@ -308,6 +319,17 @@ class Board extends React.Component {
             return true;
         }
         return false;
+    }
+
+    isValidMovePiece(p1, xy1, xy2){
+
+        if (this.getValidMoves(p1, xy1, this.state.gameState, true)){
+            if(this.checkAllPiecesIfCheck(p1,xy2,true)){
+                return false;
+            }
+            return true
+        }
+        return false
     }
 
     getValidMoves(p1, xy1, matrix, checkingMove = false){
@@ -717,13 +739,48 @@ class Board extends React.Component {
     }
 
 
-
-    checkAllPiecesIfCheck(p1, xy1){
+    checkCheckMate(){
+        let side = null
+        if (this.state.pTurn){
+            side = 0
+        } else {
+            side = 1
+        }
         let tempGameState = [...this.state.gameState]
-        let side = p1.props.side
 
-        let x1 = p1.props.x
-        let y1 = p1.props.y
+        let validMoves = []
+        for (let i = 0; i < 8; i++){
+            for(let j = 0; j < 8 ; j++){
+                if(tempGameState[i][j].side === side){
+                    validMoves = this.getValidMoves(tempGameState[i][j], i.toString() + j.toString(), tempGameState, true)
+                    if(tempGameState[i][j].part === 5){
+                    }
+                    for (let k = 0; k < validMoves.length; k++){
+                        if(this.isValidMovePiece(tempGameState[i][j], i.toString() + j.toString(), validMoves[k])){
+                            return false
+                        }
+                    }
+                }
+            }
+        }
+        return true
+    }
+
+    checkAllPiecesIfCheck(p1, xy1, checkingMove = false){
+        let tempGameState = [...this.state.gameState]
+        let side = null
+        let x1 = null
+        let y1 = null
+        if (checkingMove){
+            side = p1.side
+            x1 = p1.x
+            y1 = p1.y
+        } else {
+            side = p1.props.side
+            x1 = p1.props.x
+            y1 = p1.props.y
+        }
+
 
         let x2 = parseInt(xy1[0], 10)
         let y2 = parseInt(xy1[1], 10)
@@ -732,14 +789,11 @@ class Board extends React.Component {
         let temp2 = tempGameState[x2][y2]
         tempGameState[x2][y2] = {x:x2,y:y2,tileColor: tempGameState[x2][y2].tileColor, part: tempGameState[x1][y1].part, side: tempGameState[x1][y1].side}
         tempGameState[x1][y1] = {x:x1,y:y1, tileColor: tempGameState[x1][y1].tileColor, part: -1, side: -1}
-        //this.getValidMoves(tempGameState[i][j], i+j, true)
-        console.log(x1.toString() + y1.toString())
-        console.log(x2.toString() + y2.toString())
+
 
 
         for (let i = 0; i < 8; i++){
             for(let j = 0; j < 8 ; j++){
-                //console.log(tempGameState[i][j])
                 if(tempGameState[i][j].side !== side){
                     if(this.checkMoveCheck(i.toString()+j.toString(), !side, tempGameState)){
                         tempGameState[x2][y2] = temp2
