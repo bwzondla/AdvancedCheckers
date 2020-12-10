@@ -113,7 +113,6 @@ class Tile extends React.Component{
                 piece = {this.props.piece}
                 >
                     <div className={"tooltip"}> {this.state.current}
-                        <span className={"tooltiptext"}>{this.props.x},{this.props.y}</span>
                     </div>
                 </div>
 
@@ -199,12 +198,12 @@ class Board extends React.Component {
                 let string = ""
                 string += "Gameover: "
                 if (this.state.pTurn){
-                    string += "White"
-                } else {
                     string += "Black"
+                } else {
+                    string += "White"
                 }
                 string += " Wins!"
-                alert("Gameover")
+                alert(string)
             }
 
 
